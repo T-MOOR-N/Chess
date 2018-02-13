@@ -1,5 +1,5 @@
 ﻿using Chess.Enums;
-using Chess.Figures;
+using Chess.Pieces;
 
 namespace Chess
 {

@@ -1,6 +1,6 @@
 ﻿using Chess.Enums;
 
-namespace Chess.Figures
+namespace Chess.Pieces
 {
 	public class CPieceQueen : CPiece
 	{

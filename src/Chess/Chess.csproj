@@ -41,14 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CSquare.cs" />
-    <Compile Include="Figures\CPieceBishop.cs" />
+    <Compile Include="Pieces\CPieceBishop.cs" />
     <Compile Include="CBoard.cs" />
-    <Compile Include="Figures\CPiece.cs" />
-    <Compile Include="Figures\CPieceKing.cs" />
-    <Compile Include="Figures\CPieceKnight.cs" />
-    <Compile Include="Figures\CPiecePawn.cs" />
-    <Compile Include="Figures\CPieceQueen.cs" />
-    <Compile Include="Figures\CPieceRook.cs" />
+    <Compile Include="Pieces\CPiece.cs" />
+    <Compile Include="Pieces\CPieceKing.cs" />
+    <Compile Include="Pieces\CPieceKnight.cs" />
+    <Compile Include="Pieces\CPiecePawn.cs" />
+    <Compile Include="Pieces\CPieceQueen.cs" />
+    <Compile Include="Pieces\CPieceRook.cs" />
     <Compile Include="Enums\EPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

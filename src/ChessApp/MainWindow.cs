@@ -1,6 +1,6 @@
 ﻿using Chess;
 using Chess.Enums;
-using Chess.Figures;
+using Chess.Pieces;
 
 namespace ChessApp
 {
@@ -13,8 +13,11 @@ namespace ChessApp
 		{
 			InitializeComponent();
 
-			//ChessBoard.Board = new CBoard();
-			//ChessBoard.Board[0,1] = new CPiecePawn(EPlayer.White);
+			ChessBoard.Board = new CBoard
+			{
+				["A2"] = new CPiecePawn(EPlayer.White),
+				["A3"] = new CPieceQueen(EPlayer.Black)
+			};
 		}
 	}
 }

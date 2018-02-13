@@ -5,7 +5,7 @@ using System.Windows.Media;
 using Chess;
 using System.Windows;
 using Chess.Enums;
-using Chess.Figures;
+using Chess.Pieces;
 
 namespace ChessApp
 {
