@@ -136,6 +136,10 @@ namespace ChessApp
 			}
 		}
 
+		private static CBoard board = CBoard.GetDefaultBoard();
+
+		private static CGame game = new CGame(board);
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -143,20 +147,28 @@ namespace ChessApp
 			//var whitePawn = new CPiecePawn(EPlayer.White);
 			//var blackQueen = new CPieceQueen(EPlayer.Black);
 
-			var board = CBoard.GetDefaultBoard();
+			
 			ChessBoard.Board = board;
 
-			board["B3"] = new CPiecePawn(EPlayer.Black);
-			board["A7"] = new CPiecePawn(EPlayer.White);
-			board["A8"] = null;
+			//board["B3"] = new CPiecePawn(EPlayer.Black);
+			//board["A7"] = new CPiecePawn(EPlayer.White);
+			//board["A8"] = null;
 			
+		}
 
-			var game = new CGame(board);
-			var moves = game.GetAllMoves(EPlayer.White);
-			
-			var move = moves[8];
-			move.Do();
-			move.Undo();
+		EPlayer player = EPlayer.White;
+
+		private Random random = new Random();
+
+		private void button_Click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			var moves = game.GetAllMoves(player);
+
+			var index = random.Next(0, moves.Count);
+			moves[index].Do();
+			ChessBoard.InvalidateVisual();
+
+			player = 1 - player;
 
 		}
 	}

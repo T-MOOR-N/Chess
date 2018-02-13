@@ -6,7 +6,7 @@
 	xmlns:local="clr-namespace:ChessApp"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	Title="MainWindow"
-	Width="500"
+	Width="754"
 	Height="400"
 	mc:Ignorable="d">
 	<Grid>
@@ -14,5 +14,13 @@
 			x:Name="ChessBoard"
 			Margin="20"
 			FontSize="24" />
+		<Button
+			x:Name="button"
+			Width="75"
+			Margin="20,45,0,0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top"
+			Click="button_Click"
+			Content="Button" />
 	</Grid>
 </Window>
