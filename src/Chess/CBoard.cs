@@ -6,7 +6,7 @@ namespace Chess
 	public class CBoard
 	{
 		private readonly CPiece[,] _pieces = new CPiece[8,8];
-		
+
 		public CPiece this[string coordinate]
 		{
 			get

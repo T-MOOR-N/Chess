@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using Chess;
 using Chess.Enums;
+using Chess.Moves;
 
 namespace ChessApp
 {
@@ -22,7 +24,39 @@ namespace ChessApp
 			ChessBoard.Board = Board;
 		}
 
-		private void button_Click(object sender, System.Windows.RoutedEventArgs e)
+		private void Do(CMove move)
+		{
+			Game.Do(move);
+			Update();
+		}
+
+		private void Undo()
+		{
+			if (Game.Undo())
+			{
+				Update();
+			}
+		}
+
+		private void Redo()
+		{
+			if (Game.Redo())
+			{
+				Update();
+			}
+		}
+
+		private void Update()
+		{
+			_player = 1 - _player;
+			ChessBoard.InvalidateVisual();
+			var history = Game.GetHistory();
+			history.Reverse();
+			ListBox.ItemsSource = history;
+			ListBox.SelectedIndex = Math.Min(ListBox.Items.Count, 0);
+		}
+
+		private void DoButtonClick(object sender, RoutedEventArgs e)
 		{
 			var moves = Game.GetAllMoves(_player);
 
@@ -33,12 +67,44 @@ namespace ChessApp
 			else
 			{
 				var index = _random.Next(0, moves.Count);
-				moves[index].Do();
-				ChessBoard.InvalidateVisual();
 
-				_player = 1 - _player;
+				Do(moves[index]);
 			}
+		}
 
+		private void UndoButton_Click(object sender, RoutedEventArgs e)
+		{
+			Undo();
+		}
+
+		private void RedoButton_Click(object sender, RoutedEventArgs e)
+		{
+			Redo();
+		}
+
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			base.OnKeyDown(e);
+
+			var isControlKey = e.KeyboardDevice.IsKeyDown(Key.LeftCtrl) || e.KeyboardDevice.IsKeyDown(Key.RightCtrl);
+
+			switch (e.Key)
+			{
+				case Key.Z:
+					if (isControlKey)
+					{
+						Undo();
+					}
+					break;
+
+
+				case Key.Y:
+					if (isControlKey)
+					{
+						Redo();
+					}
+					break;
+			}
 		}
 	}
 }

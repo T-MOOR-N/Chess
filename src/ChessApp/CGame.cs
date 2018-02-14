@@ -9,6 +9,47 @@ namespace ChessApp
 	public class CGame
 	{
 		public CBoard Board { get; }
+		
+		private readonly List<CMove> _history = new List<CMove>();
+		private int _historyIndex = -1;
+
+		public List<CMove> GetHistory()
+		{
+			return _history.GetRange(0, _historyIndex + 1);
+		}
+
+		public void Do(CMove move)
+		{
+			_history.RemoveRange(_historyIndex + 1, _history.Count - _historyIndex - 1);
+			_history.Add(move);
+
+			Redo();
+		}
+
+		public bool Undo()
+		{
+			if (_historyIndex == -1)
+			{
+				return false;
+			}
+
+			_history[_historyIndex].Undo();
+			_historyIndex--;
+			return true;
+		}
+
+		public bool Redo()
+		{
+			if (_historyIndex == _history.Count - 1)
+			{
+				return false;
+			}
+
+			_historyIndex++;
+			_history[_historyIndex].Do();
+			
+			return true;
+		}
 
 		public CGame(CBoard board)
 		{

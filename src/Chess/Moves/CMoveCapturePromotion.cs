@@ -36,7 +36,7 @@ namespace Chess.Moves
 
 		public override string ToString()
 		{
-			return $"{Pawn}{new CSquare(StartFile, StartRank)}×{new CSquare(FinishFile, FinishRank)}{Promotion}";
+			return $"{Pawn}{new CSquare(StartFile, StartRank)}\u202F×\u202F{new CSquare(FinishFile, FinishRank)}{Promotion}";
 		}
 	}
 }

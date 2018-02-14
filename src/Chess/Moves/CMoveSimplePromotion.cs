@@ -1,4 +1,4 @@
-using Chess.Enums;
+ï»¿using Chess.Enums;
 using Chess.Pieces;
 
 namespace Chess.Moves
@@ -35,7 +35,7 @@ namespace Chess.Moves
 
 		public override string ToString()
 		{
-			return $"{Pawn}{new CSquare(File, StartRank)}—{new CSquare(File, FinishRank)}{Promotion}";
+			return $"{Pawn}{new CSquare(File, StartRank)}\u202F\u2013\u202F{new CSquare(File, FinishRank)}{Promotion}";
 		}
 	}
 }

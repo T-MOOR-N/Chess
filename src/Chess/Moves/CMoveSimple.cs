@@ -1,4 +1,4 @@
-using Chess.Pieces;
+ï»¿using Chess.Pieces;
 
 namespace Chess.Moves
 {
@@ -30,10 +30,10 @@ namespace Chess.Moves
 				piece.MoveTo(StartFile, StartRank);
 			};
 		}
-
+		
 		public override string ToString()
 		{
-			return $"{Piece}{new CSquare(StartFile, StartRank)}—{new CSquare(FinishFile, FinishRank)}";
+			return $"{Piece}{new CSquare(StartFile, StartRank)}\u202F\u2013\u202F{new CSquare(FinishFile, FinishRank)}";
 		}
 	}
 }

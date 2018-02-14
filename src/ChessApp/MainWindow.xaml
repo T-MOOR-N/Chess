@@ -9,18 +9,39 @@
 	Width="754"
 	Height="400"
 	mc:Ignorable="d">
-	<Grid>
+	<Grid Margin="20">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="120" />
+			<ColumnDefinition Width="*" />
+			<ColumnDefinition Width="120" />
+		</Grid.ColumnDefinitions>
 		<local:ChessBoardControl
 			x:Name="ChessBoard"
-			Margin="20"
+			Grid.Row="0"
+			Grid.Column="1"
 			FontSize="32" />
-		<Button
-			x:Name="button"
-			Width="75"
-			Margin="20,45,0,0"
-			HorizontalAlignment="Left"
+		<UniformGrid
+			Grid.Row="0"
+			Grid.Column="0"
+			Height="150"
 			VerticalAlignment="Top"
-			Click="button_Click"
-			Content="Button" />
+			Columns="1">
+			<Button
+				x:Name="DoButton"
+				Click="DoButtonClick"
+				Content="Do" />
+			<Button
+				x:Name="UndoButton"
+				Click="UndoButton_Click"
+				Content="Undo" />
+			<Button
+				x:Name="RedoButton"
+				Click="RedoButton_Click"
+				Content="Redo" />
+		</UniformGrid>
+		<ListBox
+			x:Name="ListBox"
+			Grid.Row="0"
+			Grid.Column="2" />
 	</Grid>
 </Window>
