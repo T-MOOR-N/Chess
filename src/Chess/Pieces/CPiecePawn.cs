@@ -1,4 +1,4 @@
-using Chess.Enums;
+﻿using Chess.Enums;
 
 namespace Chess.Pieces
 {
@@ -10,7 +10,7 @@ namespace Chess.Pieces
 
 		public override string ToString()
 		{
-			return "p";
+			return Player == EPlayer.White ? "♙" : "♟";
 		}
 	}
 }

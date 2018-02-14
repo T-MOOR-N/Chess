@@ -13,7 +13,7 @@
 		<local:ChessBoardControl
 			x:Name="ChessBoard"
 			Margin="20"
-			FontSize="24" />
+			FontSize="32" />
 		<Button
 			x:Name="button"
 			Width="75"

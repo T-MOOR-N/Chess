@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Windows;
 using Chess;
 using Chess.Enums;
 using Chess.Moves;
@@ -21,8 +22,194 @@ namespace ChessApp
 				Board = board;
 			}
 
+			private static bool MoveOrBreak(List<CMove> listToAdd, CPiece piece, int file, int rank)
+			{
+				var partner = board[file, rank];
+
+				if (partner == null)
+				{
+					//Ход без взятия
+					listToAdd.Add(new CMoveSimple(piece, file, rank));
+					return false;
+				}
+
+				if (partner.Player != piece.Player)
+				{
+					//Ход со взятием
+					listToAdd.Add(new CMoveCapture(piece, partner));
+				}
+				
+				return true;
+			}
+
+			private static IEnumerable<CMove> GetAllKnightMoves(CPiece piece)
+			{
+				var result = new List<CMove>();
+				var file = piece.File;
+				var rank = piece.Rank;
+
+				if (file + 1 < 8 && rank + 2 < 8)
+				{
+					MoveOrBreak(result, piece, file + 1, rank + 2);
+				}
+
+				if (file + 1 < 8 && rank - 2 >= 0)
+				{
+					MoveOrBreak(result, piece, file + 1, rank - 2);
+				}
+
+				if (file - 1 >= 0 && rank + 2 < 8)
+				{
+					MoveOrBreak(result, piece, file - 1, rank + 2);
+				}
+
+				if (file - 1 >= 0 && rank - 2 >= 0)
+				{
+					MoveOrBreak(result, piece, file - 1, rank - 2);
+				}
+
+				if (file + 2 < 8 && rank + 1 < 8)
+				{
+					MoveOrBreak(result, piece, file + 2, rank + 1);
+				}
+
+				if (file - 2 >= 0 && rank + 1 < 8)
+				{
+					MoveOrBreak(result, piece, file - 2, rank + 1);
+				}
+
+				if (file + 2 < 8 && rank - 1 >= 0)
+				{
+					MoveOrBreak(result, piece, file + 2, rank - 1);
+				}
+
+				if (file - 2 >= 0 && rank - 1 >= 0)
+				{
+					MoveOrBreak(result, piece, file - 2, rank - 1);
+				}
+
+				return result;
+			}
+			
+			private static IEnumerable<CMove> GetAllBishopMoves(CPiece piece)
+			{
+				var result = new List<CMove>();
+				var file = piece.File;
+				var rank = piece.Rank;
+
+				int f, r;
+
+				f = file + 1;
+				r = rank + 1;
+				while (f < 8 && r < 8)
+				{
+					if (MoveOrBreak(result, piece, f, r))
+					{
+						break;
+					}
+
+					f++;
+					r++;
+				}
+
+				f = file + 1;
+				r = rank - 1;
+				while (f < 8 && r >= 0)
+				{
+					if (MoveOrBreak(result, piece, f, r))
+					{
+						break;
+					}
+
+					f++;
+					r--;
+				}
+
+				f = file - 1;
+				r = rank + 1;
+				while (f >= 0 && r < 8)
+				{
+					if (MoveOrBreak(result, piece, f, r))
+					{
+						break;
+					}
+
+					f--;
+					r++;
+				}
+
+				f = file - 1;
+				r = rank - 1;
+				while (f >= 0 && r >= 0)
+				{
+					if (MoveOrBreak(result, piece, f, r))
+					{
+						break;
+					}
+
+					f--;
+					r--;
+				}
+
+				return result;
+			}
+
+			private static IEnumerable<CMove> GetAllQueenMoves(CPiece piece)
+			{
+				var result = new List<CMove>();
+				result.AddRange(GetAllRookMoves(piece));
+				result.AddRange(GetAllBishopMoves(piece));
+				return result;
+			}
+
+			private static IEnumerable<CMove> GetAllRookMoves(CPiece piece)
+			{
+				var result = new List<CMove>();
+				var file = piece.File;
+				var rank = piece.Rank;
+
+				//Смотрим все ходы направо
+				for (var f = file + 1; f <= 7; f++)
+				{
+					if (MoveOrBreak(result, piece, f, rank))
+					{
+						break;
+					}
+				}
+
+				//Смотрим все ходы налево
+				for (var f = file - 1; f >= 0; f--)
+				{
+					if (MoveOrBreak(result, piece, f, rank))
+					{
+						break;
+					}
+				}
+
+				//Смотрим все ходы вверх
+				for (var r = rank + 1; r <= 7; r++)
+				{
+					if (MoveOrBreak(result, piece, file, r))
+					{
+						break;
+					}
+				}
+
+				//Смотрим все ходы вверх
+				for (var r = rank - 1; r >= 0; r--)
+				{
+					if (MoveOrBreak(result, piece, file, r))
+					{
+						break;
+					}
+				}
+
+				return result;
+			}
+
 			private static IEnumerable<CMove> GetAllPawnMoves(CPiecePawn pawn)
 			{
+				var result = new List<CMove>();
 				var player = pawn.Player;
 				var board = pawn.Board;
 				var file = pawn.File;
@@ -40,7 +227,6 @@ namespace ChessApp
 				//Предпоследний индекс
 				var penultimateIndex = player == EPlayer.White ? 6 : 1;
 				
-				var result = new List<CMove>();
 
 				if (board[file, nextRank] == null)
 				{
@@ -129,6 +315,26 @@ namespace ChessApp
 						{
 							result.AddRange(GetAllPawnMoves(piece as CPiecePawn));
 						}
+
+						if (piece is CPieceQueen)
+						{
+							result.AddRange(GetAllQueenMoves(piece as CPieceQueen));
+						}
+
+						if (piece is CPieceRook)
+						{
+							result.AddRange(GetAllRookMoves(piece as CPieceRook));
+						}
+						
+						if (piece is CPieceBishop)
+						{
+							result.AddRange(GetAllBishopMoves(piece as CPieceBishop));
+						}
+
+						if (piece is CPieceKnight)
+						{
+							result.AddRange(GetAllKnightMoves(piece as CPieceKnight));
+						}
 					}
 				}
 
@@ -158,17 +364,24 @@ namespace ChessApp
 
 		EPlayer player = EPlayer.White;
 
-		private Random random = new Random();
+		private readonly Random random = new Random();
 
 		private void button_Click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			var moves = game.GetAllMoves(player);
 
-			var index = random.Next(0, moves.Count);
-			moves[index].Do();
-			ChessBoard.InvalidateVisual();
+			if (moves.Count == 0)
+			{
+				MessageBox.Show("Все закончилось");
+			}
+			else
+			{
+				var index = random.Next(0, moves.Count);
+				moves[index].Do();
+				ChessBoard.InvalidateVisual();
 
-			player = 1 - player;
+				player = 1 - player;
+			}
 
 		}
 	}

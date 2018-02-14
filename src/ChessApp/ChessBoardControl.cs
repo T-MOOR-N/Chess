@@ -35,8 +35,8 @@ namespace ChessApp
 			var formattedText = new FormattedText(piece.ToString(), CultureInfo.InvariantCulture, FlowDirection.LeftToRight, typeFace,
 				FontSize, foreground)
 			{
-				MaxTextWidth = square.Width,
-				MaxTextHeight = square.Height,
+				MaxTextWidth = square.Width * 1.5,
+				MaxTextHeight = square.Height * 1.5,
 				Trimming = TextTrimming.CharacterEllipsis
 			};
 
@@ -78,8 +78,14 @@ namespace ChessApp
 					var r = l + size / 8;
 					var t = b - size / 8;
 
+					l = Math.Floor(l + 0.5D);
+					t = Math.Floor(t + 0.5D);
+					r = Math.Floor(r + 0.5D);
+					b = Math.Floor(b + 0.5D);
+
 					var square = new Rect(l, t, r - l, b - t);
-					var brush = (i + j)%2 == 0 ? Brushes.Peru : Brushes.PeachPuff;
+					//var brush = (i + j)%2 == 0 ? Brushes.Peru : Brushes.PeachPuff;
+					var brush = (i + j) % 2 == 0 ? Brushes.DimGray : Brushes.Gray;
 
 					drawingContext.DrawRectangle(brush, null, square);
 

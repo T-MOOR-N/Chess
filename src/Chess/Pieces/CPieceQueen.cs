@@ -10,7 +10,7 @@ namespace Chess.Pieces
 
 		public override string ToString()
 		{
-			return "Q";
+			return Player == EPlayer.White ? "♕" : "♛";
 		}
 	}
 }
