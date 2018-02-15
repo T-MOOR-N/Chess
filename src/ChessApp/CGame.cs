@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+п»їusing System.Collections.Generic;
 using Chess;
 using Chess.Enums;
 using Chess.Moves;
@@ -62,14 +62,14 @@ namespace ChessApp
 
 			if (partner == null)
 			{
-				//Ход без взятия
+				//РҐРѕРґ Р±РµР· РІР·СЏС‚РёСЏ
 				listToAdd.Add(new CMoveSimple(piece, file, rank));
 				return false;
 			}
 
 			if (partner.Player != piece.Player)
 			{
-				//Ход со взятием
+				//РҐРѕРґ СЃРѕ РІР·СЏС‚РёРµРј
 				listToAdd.Add(new CMoveCapture(piece, partner));
 			}
 
@@ -242,7 +242,7 @@ namespace ChessApp
 				MoveOrBreak(result, piece, file - 1, rank - 1);
 			}
 
-			//Todo:реализация короля
+			//Todo:СЂРµР°Р»РёР·Р°С†РёСЏ РєРѕСЂРѕР»СЏ
 
 			return result;
 		}
@@ -253,7 +253,7 @@ namespace ChessApp
 			var file = piece.File;
 			var rank = piece.Rank;
 
-			//Смотрим все ходы направо
+			//РЎРјРѕС‚СЂРёРј РІСЃРµ С…РѕРґС‹ РЅР°РїСЂР°РІРѕ
 			for (var f = file + 1; f <= 7; f++)
 			{
 				if (MoveOrBreak(result, piece, f, rank))
@@ -262,7 +262,7 @@ namespace ChessApp
 				}
 			}
 
-			//Смотрим все ходы налево
+			//РЎРјРѕС‚СЂРёРј РІСЃРµ С…РѕРґС‹ РЅР°Р»РµРІРѕ
 			for (var f = file - 1; f >= 0; f--)
 			{
 				if (MoveOrBreak(result, piece, f, rank))
@@ -271,7 +271,7 @@ namespace ChessApp
 				}
 			}
 
-			//Смотрим все ходы вверх
+			//РЎРјРѕС‚СЂРёРј РІСЃРµ С…РѕРґС‹ РІРІРµСЂС…
 			for (var r = rank + 1; r <= 7; r++)
 			{
 				if (MoveOrBreak(result, piece, file, r))
@@ -280,7 +280,7 @@ namespace ChessApp
 				}
 			}
 
-			//Смотрим все ходы вверх
+			//РЎРјРѕС‚СЂРёРј РІСЃРµ С…РѕРґС‹ РІРІРµСЂС…
 			for (var r = rank - 1; r >= 0; r--)
 			{
 				if (MoveOrBreak(result, piece, file, r))
@@ -300,16 +300,16 @@ namespace ChessApp
 			var file = pawn.File;
 			var rank = pawn.Rank;
 
-			//Следующий горизонталь по направлению игры
+			//РЎР»РµРґСѓСЋС‰РёР№ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊ РїРѕ РЅР°РїСЂР°РІР»РµРЅРёСЋ РёРіСЂС‹
 			var nextRank = player == EPlayer.White ? rank + 1 : rank - 1;
 
-			//Начальное положение пешки
+			//РќР°С‡Р°Р»СЊРЅРѕРµ РїРѕР»РѕР¶РµРЅРёРµ РїРµС€РєРё
 			var smallIndex = player == EPlayer.White ? 1 : 6;
 
-			//Двойной ход пешки
+			//Р”РІРѕР№РЅРѕР№ С…РѕРґ РїРµС€РєРё
 			var largeIndex = player == EPlayer.White ? 3 : 4;
 
-			//Предпоследний индекс
+			//РџСЂРµРґРїРѕСЃР»РµРґРЅРёР№ РёРЅРґРµРєСЃ
 			var penultimateIndex = player == EPlayer.White ? 6 : 1;
 
 
@@ -317,7 +317,7 @@ namespace ChessApp
 			{
 				if (rank == penultimateIndex)
 				{
-					//Ход без взятия с превращением
+					//РҐРѕРґ Р±РµР· РІР·СЏС‚РёСЏ СЃ РїСЂРµРІСЂР°С‰РµРЅРёРµРј
 					result.Add(new CMoveSimplePromotion(pawn, new CPieceQueen(pawn.Player)));
 					result.Add(new CMoveSimplePromotion(pawn, new CPieceRook(pawn.Player)));
 					result.Add(new CMoveSimplePromotion(pawn, new CPieceBishop(pawn.Player)));
@@ -325,13 +325,13 @@ namespace ChessApp
 				}
 				else
 				{
-					//Ход без взятия без превращения
+					//РҐРѕРґ Р±РµР· РІР·СЏС‚РёСЏ Р±РµР· РїСЂРµРІСЂР°С‰РµРЅРёСЏ
 					result.Add(new CMoveSimple(pawn, file, nextRank));
 				}
 
 				if (rank == smallIndex && board[file, largeIndex] == null)
 				{
-					//Двойной ход пешки
+					//Р”РІРѕР№РЅРѕР№ С…РѕРґ РїРµС€РєРё
 					result.Add(new CMoveSimple(pawn, file, largeIndex));
 				}
 			}
@@ -343,7 +343,7 @@ namespace ChessApp
 				{
 					if (rank == penultimateIndex)
 					{
-						//Ход со взятием с превращением
+						//РҐРѕРґ СЃРѕ РІР·СЏС‚РёРµРј СЃ РїСЂРµРІСЂР°С‰РµРЅРёРµРј
 						result.Add(new CMoveCapturePromotion(pawn, new CPieceQueen(pawn.Player), partner));
 						result.Add(new CMoveCapturePromotion(pawn, new CPieceRook(pawn.Player), partner));
 						result.Add(new CMoveCapturePromotion(pawn, new CPieceBishop(pawn.Player), partner));
@@ -351,7 +351,7 @@ namespace ChessApp
 					}
 					else
 					{
-						//Ход со взятием без превращения
+						//РҐРѕРґ СЃРѕ РІР·СЏС‚РёРµРј Р±РµР· РїСЂРµРІСЂР°С‰РµРЅРёСЏ
 						result.Add(new CMoveCapture(pawn, partner));
 					}
 				}
@@ -364,7 +364,7 @@ namespace ChessApp
 				{
 					if (rank == penultimateIndex)
 					{
-						//Ход со взятием с превращением
+						//РҐРѕРґ СЃРѕ РІР·СЏС‚РёРµРј СЃ РїСЂРµРІСЂР°С‰РµРЅРёРµРј
 						result.Add(new CMoveCapturePromotion(pawn, new CPieceQueen(pawn.Player), partner));
 						result.Add(new CMoveCapturePromotion(pawn, new CPieceRook(pawn.Player), partner));
 						result.Add(new CMoveCapturePromotion(pawn, new CPieceBishop(pawn.Player), partner));
@@ -372,7 +372,7 @@ namespace ChessApp
 					}
 					else
 					{
-						//Ход со взятием без превращения
+						//РҐРѕРґ СЃРѕ РІР·СЏС‚РёРµРј Р±РµР· РїСЂРµРІСЂР°С‰РµРЅРёСЏ
 						result.Add(new CMoveCapture(pawn, partner));
 					}
 				}
