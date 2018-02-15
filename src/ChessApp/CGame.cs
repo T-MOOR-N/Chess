@@ -8,11 +8,11 @@ namespace ChessApp
 {
 	public class CGame
 	{
-		public CBoard Board { get; }
-		
 		private readonly List<CMove> _history = new List<CMove>();
 		private int _historyIndex = -1;
 
+		public CBoard Board { get; }
+		
 		public List<CMove> GetHistory()
 		{
 			return _history.GetRange(0, _historyIndex + 1);
@@ -201,13 +201,46 @@ namespace ChessApp
 			var result = new List<CMove>();
 			var file = piece.File;
 			var rank = piece.Rank;
-
-			//ход направо
+			
 			if (file + 1 <= 7)
 			{
 				MoveOrBreak(result, piece, file + 1, rank);
 			}
 
+			if (file - 1 >= 0)
+			{
+				MoveOrBreak(result, piece, file - 1, rank);
+			}
+
+			if (rank + 1 <= 7)
+			{
+				MoveOrBreak(result, piece, file, rank + 1);
+			}
+
+			if (rank - 1 >= 0)
+			{
+				MoveOrBreak(result, piece, file, rank - 1);
+			}
+
+			if (file + 1 <= 7 && rank + 1 <= 7)
+			{
+				MoveOrBreak(result, piece, file + 1, rank + 1);
+			}
+
+			if (file + 1 <= 7 && rank - 1 >= 0)
+			{
+				MoveOrBreak(result, piece, file + 1, rank - 1);
+			}
+
+			if (file - 1 >= 0 && rank + 1 <= 7)
+			{
+				MoveOrBreak(result, piece, file - 1, rank + 1);
+			}
+
+			if (file - 1 >= 0 && rank - 1 >= 0)
+			{
+				MoveOrBreak(result, piece, file - 1, rank - 1);
+			}
 
 			//Todo:реализация короля
 
@@ -347,8 +380,7 @@ namespace ChessApp
 
 			return result;
 		}
-
-
+		
 		public List<CMove> GetAllMoves(EPlayer player)
 		{
 			var result = new List<CMove>();

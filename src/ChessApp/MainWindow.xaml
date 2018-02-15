@@ -5,43 +5,51 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="clr-namespace:ChessApp"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-	Title="MainWindow"
-	Width="754"
+	Title="Chess"
+	Width="750"
 	Height="400"
+	WindowStartupLocation="CenterScreen"
 	mc:Ignorable="d">
 	<Grid Margin="20">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="120" />
 			<ColumnDefinition Width="*" />
-			<ColumnDefinition Width="120" />
+			<ColumnDefinition Width="200" />
 		</Grid.ColumnDefinitions>
 		<local:ChessBoardControl
 			x:Name="ChessBoard"
 			Grid.Row="0"
 			Grid.Column="1"
-			FontSize="32" />
+			Margin="20,0"
+			FontFamily="Arial"
+			FontSize="{Binding ElementName=ChessBoard, Path=SquareSize}" />
 		<UniformGrid
 			Grid.Row="0"
 			Grid.Column="0"
 			Height="150"
+			Margin="0,-4"
 			VerticalAlignment="Top"
 			Columns="1">
 			<Button
 				x:Name="DoButton"
+				Margin="0,4"
 				Click="DoButtonClick"
 				Content="Do" />
 			<Button
 				x:Name="UndoButton"
+				Margin="0,4"
 				Click="UndoButton_Click"
 				Content="Undo" />
 			<Button
 				x:Name="RedoButton"
+				Margin="0,4"
 				Click="RedoButton_Click"
 				Content="Redo" />
 		</UniformGrid>
 		<ListBox
 			x:Name="ListBox"
 			Grid.Row="0"
-			Grid.Column="2" />
+			Grid.Column="2"
+			FontFamily="Courier New" />
 	</Grid>
 </Window>

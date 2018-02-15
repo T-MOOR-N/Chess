@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Chess;
@@ -50,10 +52,29 @@ namespace ChessApp
 		{
 			_player = 1 - _player;
 			ChessBoard.InvalidateVisual();
+
 			var history = Game.GetHistory();
-			history.Reverse();
-			ListBox.ItemsSource = history;
-			ListBox.SelectedIndex = Math.Min(ListBox.Items.Count, 0);
+
+			var result = new List<string>();
+			for (var i = 0; i < history.Count; i += 2)
+			{
+				var num = i/2 + 1;
+				var numSize = num.ToString().Length;
+				var spaces = new string(' ', Math.Max(2, numSize) - numSize);
+
+				var text = $"{spaces}{num}. ";
+				text += $"{history[i]}";
+				if (i + 1 < history.Count)
+				{
+					text += $"\u2003{history[i + 1]}";
+				}
+				result.Add(text);
+			}
+
+
+
+			ListBox.ItemsSource = result;
+			ListBox.ScrollIntoView(result.LastOrDefault());
 		}
 
 		private void DoButtonClick(object sender, RoutedEventArgs e)
@@ -90,6 +111,10 @@ namespace ChessApp
 
 			switch (e.Key)
 			{
+				case Key.Back:
+					Undo();
+					break;
+
 				case Key.Z:
 					if (isControlKey)
 					{
