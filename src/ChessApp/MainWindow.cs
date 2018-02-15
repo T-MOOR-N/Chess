@@ -131,5 +131,14 @@ namespace ChessApp
 					break;
 			}
 		}
+
+		private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
+		{
+			var depth = 2;
+			double tick = DateTime.Now.Ticks;
+			var result = Game.Analyze(EPlayer.White, depth);
+			tick = (DateTime.Now.Ticks - tick)/10000D;
+			MessageBox.Show($"Глубина анализа ходов: {depth}.\r\nПроанализировано варинантов: {result}.\r\nВремя выполнения: {tick} мс.");
+		}
 	}
 }

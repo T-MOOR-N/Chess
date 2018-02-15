@@ -31,6 +31,12 @@ namespace Chess
 			}
 		}
 
+		//public CPiece this[int file, int rank]
+		//{
+		//	get { return _pieces[file, rank]; }
+		//	set { _pieces[file, rank] = value; }
+		//}
+
 		public CPiece this[int file, int rank]
 		{
 			get { return _pieces[file, rank]; }

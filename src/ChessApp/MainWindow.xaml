@@ -45,6 +45,11 @@
 				Margin="0,4"
 				Click="RedoButton_Click"
 				Content="Redo" />
+
+			<Button
+				x:Name="AnalyzeButton"
+				Margin="0,4"
+				Content="Analyze" Click="AnalyzeButton_Click" />
 		</UniformGrid>
 		<ListBox
 			x:Name="ListBox"

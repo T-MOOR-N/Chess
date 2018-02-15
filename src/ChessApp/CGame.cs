@@ -242,8 +242,6 @@ namespace ChessApp
 				MoveOrBreak(result, piece, file - 1, rank - 1);
 			}
 
-			//Todo:реализация короля
-
 			return result;
 		}
 
@@ -431,6 +429,34 @@ namespace ChessApp
 			return result;
 		}
 
-		
+		public int Analyze(EPlayer player = EPlayer.White, int depth = 3)
+		{
+			if (depth == 0)
+			{
+				return 0;
+			}
+
+			var result = 0;
+
+			var moves = GetAllMoves(player);
+			result += moves.Count;
+
+			foreach (var move in moves)
+			{
+				move.Do();
+				var counterMoves = GetAllMoves(1 - player);
+				result += counterMoves.Count;
+
+				foreach (var counterMove in counterMoves)
+				{
+					counterMove.Do();
+					result += Analyze(player, depth - 1);
+					counterMove.Undo();
+				}
+				move.Undo();
+			}
+
+			return result;
+		}
 	}
 }
