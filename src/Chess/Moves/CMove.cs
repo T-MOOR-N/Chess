@@ -1,54 +1,60 @@
-using System;
+п»їusing System.Linq;
 
 namespace Chess.Moves
 {
-
-	/// <summary>
-	/// Абстрактный класс шахматного хода.
-	/// </summary>
-	public abstract class CMove
+	public class CMove
 	{
-		/// <summary>
-		/// Получает значение, указывающее совершён ли ход.
-		/// </summary>
-		public bool IsDone { get; private set; }
+		public readonly CMoveItem[] Remove;
+		public readonly CMoveItem[] Insert;
 
-		/// <summary>
-		/// Прямое действие — совершение ход.
-		/// </summary>
-		protected Action DoAction;
-
-		/// <summary>
-		/// Обратное действие — отмена хода.
-		/// </summary>
-		protected Action UndoAction;
-
-		/// <summary>
-		/// Совершает ход.
-		/// </summary>
-		public void Do()
+		public CMove(CMoveItem[] remove, CMoveItem[] insert)
 		{
-			if (IsDone)
-			{
-				return;
-			}
-
-			DoAction();
-			IsDone = true;
+			Remove = remove;
+			Insert = insert;
 		}
 
-		/// <summary>
-		/// Отменяет ход.
-		/// </summary>
-		public void Undo()
+		public void Do()
 		{
-			if (!IsDone)
+			foreach (var item in Remove)
 			{
-				return;
+				item.Board[item.File, item.Rank] = null;
 			}
 
-			UndoAction();
-			IsDone = false;
+			foreach (var item in Insert)
+			{
+				item.Board[item.File, item.Rank] = item.Piece;
+			}
+		}
+
+		public void Undo()
+		{
+			foreach (var item in Insert)
+			{
+				item.Board[item.File, item.Rank] = null;
+			}
+
+			foreach (var item in Remove)
+			{
+				item.Board[item.File, item.Rank] = item.Piece;
+			}
+		}
+
+		public override string ToString()
+		{
+			if (Insert.Length == 1)
+			{
+				var to = Insert[0];
+				var partner = Remove.FirstOrDefault(x => x.File == to.File && x.Rank == to.Rank);
+				var operation = partner == null ? "вЂ“" : "Г—";
+
+				var from = Remove.FirstOrDefault(x => x.Piece == to.Piece) ??
+				           Remove.FirstOrDefault(x => x.Piece.Player == to.Piece.Player);
+
+				var promotion = from.Piece != to.Piece ? to.Piece : null;
+				return $"{from.Piece}{new CSquare(from.File, from.Rank)}\u202F{operation}\u202F{new CSquare(to.File, to.Rank)}{promotion}";
+			}
+
+			return base.ToString();
 		}
 	}
 }

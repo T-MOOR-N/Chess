@@ -40,12 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Moves\CMoveCapture.cs" />
-    <Compile Include="Moves\CMoveCapturePromotion.cs" />
     <Compile Include="Moves\CMove.cs" />
     <Compile Include="CSquare.cs" />
-    <Compile Include="Moves\CMoveSimple.cs" />
-    <Compile Include="Moves\CMoveSimplePromotion.cs" />
+    <Compile Include="Moves\CMoveItem.cs" />
     <Compile Include="Pieces\CPieceBishop.cs" />
     <Compile Include="CBoard.cs" />
     <Compile Include="Pieces\CPiece.cs" />

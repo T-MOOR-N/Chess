@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Chess;
 using Chess.Enums;
 using Chess.Moves;
+using Chess.Pieces;
 
 namespace ChessApp
 {
@@ -14,27 +15,52 @@ namespace ChessApp
 	/// </summary>
 	public partial class MainWindow
 	{
-		private static readonly CBoard Board = CBoard.GetDefaultBoard();
-		private static readonly CGame Game = new CGame(Board);
+		private CGame _game;
 		private EPlayer _player = EPlayer.White;
 		private readonly Random _random = new Random();
 
 		public MainWindow()
 		{
 			InitializeComponent();
+			
+			Reset();
+		}
 
-			ChessBoard.Board = Board;
+		private void Reset()
+		{
+			ChessBoard.Board =   CBoard.GetDefaultBoard();
+
+			//_board = new CBoard
+			//{
+			//	["B7"] = new CPieceKing(EPlayer.White),
+			//	["D7"] = new CPieceKing(EPlayer.Black),
+			//	["E5"] = new CPieceQueen(EPlayer.White),
+			//	["E6"] = new CPieceKnight(EPlayer.White),
+			//	["E7"] = new CPieceBishop(EPlayer.Black),
+			//};
+
+			//_board = new CBoard
+			//{
+			//	["H6"] = new CPieceKing(EPlayer.Black),
+			//	["H8"] = new CPieceKing(EPlayer.White),
+			//	["G1"] = new CPieceQueen(EPlayer.Black)
+			//};
+
+			_game = new CGame(ChessBoard.Board);
+			_player = EPlayer.White;
+			ChessBoard.InvalidateVisual();
+			ListBox.ItemsSource = null;
 		}
 
 		private void Do(CMove move)
 		{
-			Game.Do(move);
+			_game.Do(move);
 			Update();
 		}
 
 		private void Undo()
 		{
-			if (Game.Undo())
+			if (_game.Undo())
 			{
 				Update();
 			}
@@ -42,7 +68,7 @@ namespace ChessApp
 
 		private void Redo()
 		{
-			if (Game.Redo())
+			if (_game.Redo())
 			{
 				Update();
 			}
@@ -53,7 +79,7 @@ namespace ChessApp
 			_player = 1 - _player;
 			ChessBoard.InvalidateVisual();
 
-			var history = Game.GetHistory();
+			var history = _game.GetHistory();
 
 			var result = new List<string>();
 			for (var i = 0; i < history.Count; i += 2)
@@ -71,36 +97,30 @@ namespace ChessApp
 				result.Add(text);
 			}
 
-
-
 			ListBox.ItemsSource = result;
 			ListBox.ScrollIntoView(result.LastOrDefault());
 		}
 
-		private void DoButtonClick(object sender, RoutedEventArgs e)
+		private void DoButton_Click(object sender, RoutedEventArgs e)
 		{
-			var moves = Game.GetAllMoves(_player);
-
+			//Выбираем все допустимые ходы
+			var moves = _game.GetAllMoves(_player).Where(x =>
+			{
+				x.Do();
+				var result = _game.GetAllMoves(1 - _player) != null;
+				x.Undo();
+				return result;
+			}).ToList();
+			
 			if (moves.Count == 0)
 			{
-				MessageBox.Show("Все закончилось");
+				MessageBox.Show("Некуда ходить!");
 			}
 			else
 			{
 				var index = _random.Next(0, moves.Count);
-
 				Do(moves[index]);
 			}
-		}
-
-		private void UndoButton_Click(object sender, RoutedEventArgs e)
-		{
-			Undo();
-		}
-
-		private void RedoButton_Click(object sender, RoutedEventArgs e)
-		{
-			Redo();
 		}
 
 		protected override void OnKeyDown(KeyEventArgs e)
@@ -132,13 +152,29 @@ namespace ChessApp
 			}
 		}
 
+		private void UndoButton_Click(object sender, RoutedEventArgs e)
+		{
+			Undo();
+		}
+
+		private void RedoButton_Click(object sender, RoutedEventArgs e)
+		{
+			Redo();
+		}
+		
 		private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
 		{
 			var depth = 2;
 			double tick = DateTime.Now.Ticks;
-			var result = Game.Analyze(EPlayer.White, depth);
+			int result;
+			_game.Analyze(EPlayer.White, depth, out result);
 			tick = (DateTime.Now.Ticks - tick)/10000D;
 			MessageBox.Show($"Глубина анализа ходов: {depth}.\r\nПроанализировано варинантов: {result}.\r\nВремя выполнения: {tick} мс.");
+		}
+		
+		private void ResetButton_Click(object sender, RoutedEventArgs e)
+		{
+			Reset();
 		}
 	}
 }

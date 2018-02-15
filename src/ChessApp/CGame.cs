@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using Chess;
 using Chess.Enums;
 using Chess.Moves;
@@ -9,10 +11,11 @@ namespace ChessApp
 	public class CGame
 	{
 		private readonly List<CMove> _history = new List<CMove>();
+
 		private int _historyIndex = -1;
 
 		public CBoard Board { get; }
-		
+
 		public List<CMove> GetHistory()
 		{
 			return _history.GetRange(0, _historyIndex + 1);
@@ -47,7 +50,7 @@ namespace ChessApp
 
 			_historyIndex++;
 			_history[_historyIndex].Do();
-			
+
 			return true;
 		}
 
@@ -56,250 +59,373 @@ namespace ChessApp
 			Board = board;
 		}
 
-		private static bool MoveOrBreak(ICollection<CMove> listToAdd, CPiece piece, int file, int rank)
+		private enum EMoveResult
 		{
-			var partner = piece.Board[file, rank];
+			Impossible = 0,
+			Easy = 1,
+			Capture = 2,
+			KingCapture = 3,
+			
+		}
+
+		private static EMoveResult MoveOrBreak(ICollection<CMove> listToAdd, CMoveItem fromItem, int file, int rank)
+		{
+			var piece = fromItem.Piece;
+			var partner = fromItem.Board[file, rank];
+			var board = fromItem.Board;
 
 			if (partner == null)
 			{
 				//Ход без взятия
-				listToAdd.Add(new CMoveSimple(piece, file, rank));
-				return false;
+				//listToAdd.Add(new CMoveSimple(piece, file, rank));
+
+				var move = new CMove(
+					new[] { fromItem },
+					new[] { new CMoveItem(board, piece, file, rank) }
+					);
+
+				listToAdd.Add(move);
+
+				return EMoveResult.Easy;
 			}
 
 			if (partner.Player != piece.Player)
 			{
 				//Ход со взятием
-				listToAdd.Add(new CMoveCapture(piece, partner));
+				//listToAdd.Add(new CMoveCapture(piece, partner));
+
+				if (partner.Type == EPieceType.King)
+				{
+					return EMoveResult.KingCapture;
+				}
+
+				var move = new CMove(
+					new[] { fromItem, new CMoveItem(board, partner, file, rank) },
+					new[] { new CMoveItem(board, piece, file, rank) }
+					);
+
+				listToAdd.Add(move);
+				return EMoveResult.Capture;
+			}
+
+			return EMoveResult.Impossible;
+		}
+
+		private static bool AddKnightMoves(ICollection<CMove> result, CMoveItem fromItem)
+		{
+			var startFile = fromItem.File;
+			var startRank = fromItem.Rank;
+
+			if (startFile + 1 < 8 && startRank + 2 < 8)
+			{
+				if (MoveOrBreak(result, fromItem, startFile + 1, startRank + 2) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
+			}
+
+			if (startFile + 1 < 8 && startRank - 2 >= 0)
+			{
+				if (MoveOrBreak(result, fromItem, startFile + 1, startRank - 2) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
+			}
+
+			if (startFile - 1 >= 0 && startRank + 2 < 8)
+			{
+				if (MoveOrBreak(result, fromItem, startFile - 1, startRank + 2) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
+			}
+
+			if (startFile - 1 >= 0 && startRank - 2 >= 0)
+			{
+				if (MoveOrBreak(result, fromItem, startFile - 1, startRank - 2) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
+			}
+
+			if (startFile + 2 < 8 && startRank + 1 < 8)
+			{
+				if (MoveOrBreak(result, fromItem, startFile + 2, startRank + 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
+			}
+
+			if (startFile - 2 >= 0 && startRank + 1 < 8)
+			{
+				if (MoveOrBreak(result, fromItem, startFile - 2, startRank + 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
+			}
+
+			if (startFile + 2 < 8 && startRank - 1 >= 0)
+			{
+				if (MoveOrBreak(result, fromItem, startFile + 2, startRank - 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
+			}
+
+			if (startFile - 2 >= 0 && startRank - 1 >= 0)
+			{
+				if (MoveOrBreak(result, fromItem, startFile - 2, startRank - 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
 			return true;
 		}
 
-		private static IEnumerable<CMove> GetAllKnightMoves(CPiece piece)
+		private static bool AddBishopMoves(ICollection<CMove> result, CMoveItem fromItem)
 		{
-			var result = new List<CMove>();
-			var file = piece.File;
-			var rank = piece.Rank;
-
-			if (file + 1 < 8 && rank + 2 < 8)
-			{
-				MoveOrBreak(result, piece, file + 1, rank + 2);
-			}
-
-			if (file + 1 < 8 && rank - 2 >= 0)
-			{
-				MoveOrBreak(result, piece, file + 1, rank - 2);
-			}
-
-			if (file - 1 >= 0 && rank + 2 < 8)
-			{
-				MoveOrBreak(result, piece, file - 1, rank + 2);
-			}
-
-			if (file - 1 >= 0 && rank - 2 >= 0)
-			{
-				MoveOrBreak(result, piece, file - 1, rank - 2);
-			}
-
-			if (file + 2 < 8 && rank + 1 < 8)
-			{
-				MoveOrBreak(result, piece, file + 2, rank + 1);
-			}
-
-			if (file - 2 >= 0 && rank + 1 < 8)
-			{
-				MoveOrBreak(result, piece, file - 2, rank + 1);
-			}
-
-			if (file + 2 < 8 && rank - 1 >= 0)
-			{
-				MoveOrBreak(result, piece, file + 2, rank - 1);
-			}
-
-			if (file - 2 >= 0 && rank - 1 >= 0)
-			{
-				MoveOrBreak(result, piece, file - 2, rank - 1);
-			}
-
-			return result;
-		}
-
-		private static IEnumerable<CMove> GetAllBishopMoves(CPiece piece)
-		{
-			var result = new List<CMove>();
-			var file = piece.File;
-			var rank = piece.Rank;
+			var startFile = fromItem.File;
+			var startRank = fromItem.Rank;
 
 			int f, r;
 
-			f = file + 1;
-			r = rank + 1;
+			f = startFile + 1;
+			r = startRank + 1;
 			while (f < 8 && r < 8)
 			{
-				if (MoveOrBreak(result, piece, f, r))
+				var moveResult = MoveOrBreak(result, fromItem, f, r);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
+				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
 				}
 
 				f++;
 				r++;
 			}
 
-			f = file + 1;
-			r = rank - 1;
+			f = startFile + 1;
+			r = startRank - 1;
 			while (f < 8 && r >= 0)
 			{
-				if (MoveOrBreak(result, piece, f, r))
+				var moveResult = MoveOrBreak(result, fromItem, f, r);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
+				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
 				}
 
 				f++;
 				r--;
 			}
 
-			f = file - 1;
-			r = rank + 1;
+			f = startFile - 1;
+			r = startRank + 1;
 			while (f >= 0 && r < 8)
 			{
-				if (MoveOrBreak(result, piece, f, r))
+				var moveResult = MoveOrBreak(result, fromItem, f, r);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
+				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
 				}
 
 				f--;
 				r++;
 			}
 
-			f = file - 1;
-			r = rank - 1;
+			f = startFile - 1;
+			r = startRank - 1;
 			while (f >= 0 && r >= 0)
 			{
-				if (MoveOrBreak(result, piece, f, r))
+				var moveResult = MoveOrBreak(result, fromItem, f, r);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
+				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
 				}
 
 				f--;
 				r--;
 			}
 
-			return result;
+			return true;
 		}
 
-		private static IEnumerable<CMove> GetAllQueenMoves(CPiece piece)
+		private static bool AddQueenMoves(ICollection<CMove> result, CMoveItem fromItem)
 		{
-			var result = new List<CMove>();
-			result.AddRange(GetAllRookMoves(piece));
-			result.AddRange(GetAllBishopMoves(piece));
-			return result;
+			if (!AddRookMoves(result, fromItem))
+			{
+				return false;
+			}
+
+			if (!AddBishopMoves(result, fromItem))
+			{
+				return false;
+			}
+
+			return true;
 		}
 
-		private static IEnumerable<CMove> GetAllKingMoves(CPiece piece)
+		private static bool AddKingMoves(ICollection<CMove> result, CMoveItem fromItem)
 		{
-			var result = new List<CMove>();
-			var file = piece.File;
-			var rank = piece.Rank;
-			
-			if (file + 1 <= 7)
+			var startFile = fromItem.File;
+			var startRank = fromItem.Rank;
+
+			if (startFile + 1 <= 7)
 			{
-				MoveOrBreak(result, piece, file + 1, rank);
+				if (MoveOrBreak(result, fromItem, startFile + 1, startRank) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			if (file - 1 >= 0)
+			if (startFile - 1 >= 0)
 			{
-				MoveOrBreak(result, piece, file - 1, rank);
+				if (MoveOrBreak(result, fromItem, startFile - 1, startRank) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			if (rank + 1 <= 7)
+			if (startRank + 1 <= 7)
 			{
-				MoveOrBreak(result, piece, file, rank + 1);
+				if (MoveOrBreak(result, fromItem, startFile, startRank + 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			if (rank - 1 >= 0)
+			if (startRank - 1 >= 0)
 			{
-				MoveOrBreak(result, piece, file, rank - 1);
+				if (MoveOrBreak(result, fromItem, startFile, startRank - 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			if (file + 1 <= 7 && rank + 1 <= 7)
+			if (startFile + 1 <= 7 && startRank + 1 <= 7)
 			{
-				MoveOrBreak(result, piece, file + 1, rank + 1);
+				if (MoveOrBreak(result, fromItem, startFile + 1, startRank + 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			if (file + 1 <= 7 && rank - 1 >= 0)
+			if (startFile + 1 <= 7 && startRank - 1 >= 0)
 			{
-				MoveOrBreak(result, piece, file + 1, rank - 1);
+				if (MoveOrBreak(result, fromItem, startFile + 1, startRank - 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			if (file - 1 >= 0 && rank + 1 <= 7)
+			if (startFile - 1 >= 0 && startRank + 1 <= 7)
 			{
-				MoveOrBreak(result, piece, file - 1, rank + 1);
+				if (MoveOrBreak(result, fromItem, startFile - 1, startRank + 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			if (file - 1 >= 0 && rank - 1 >= 0)
+			if (startFile - 1 >= 0 && startRank - 1 >= 0)
 			{
-				MoveOrBreak(result, piece, file - 1, rank - 1);
+				if (MoveOrBreak(result, fromItem, startFile - 1, startRank - 1) == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			return result;
+			return true;
 		}
 
-		private static IEnumerable<CMove> GetAllRookMoves(CPiece piece)
+		private static bool AddRookMoves(ICollection<CMove> result, CMoveItem fromItem)
 		{
-			var result = new List<CMove>();
-			var file = piece.File;
-			var rank = piece.Rank;
+			var startFile = fromItem.File;
+			var startRank = fromItem.Rank;
 
 			//Смотрим все ходы направо
-			for (var f = file + 1; f <= 7; f++)
+			for (var f = startFile + 1; f <= 7; f++)
 			{
-				if (MoveOrBreak(result, piece, f, rank))
+				var moveResult = MoveOrBreak(result, fromItem, f, startRank);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
+				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
 				}
 			}
 
 			//Смотрим все ходы налево
-			for (var f = file - 1; f >= 0; f--)
+			for (var f = startFile - 1; f >= 0; f--)
 			{
-				if (MoveOrBreak(result, piece, f, rank))
+				var moveResult = MoveOrBreak(result, fromItem, f, startRank);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
+				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
 				}
 			}
 
 			//Смотрим все ходы вверх
-			for (var r = rank + 1; r <= 7; r++)
+			for (var r = startRank + 1; r <= 7; r++)
 			{
-				if (MoveOrBreak(result, piece, file, r))
+				var moveResult = MoveOrBreak(result, fromItem, startFile, r);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
+				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
 				}
 			}
 
 			//Смотрим все ходы вверх
-			for (var r = rank - 1; r >= 0; r--)
+			for (var r = startRank - 1; r >= 0; r--)
 			{
-				if (MoveOrBreak(result, piece, file, r))
+				var moveResult = MoveOrBreak(result, fromItem, startFile, r);
+				if (moveResult == EMoveResult.Impossible || moveResult == EMoveResult.Capture)
 				{
 					break;
 				}
+				if (moveResult == EMoveResult.KingCapture)
+				{
+					return false;
+				}
 			}
 
-			return result;
+			return true;
 		}
 
-		private static IEnumerable<CMove> GetAllPawnMoves(CPiecePawn pawn)
+		private static bool AddPawnMoves(ICollection<CMove> result, CMoveItem fromItem)
 		{
-			var result = new List<CMove>();
-			var player = pawn.Player;
-			var board = pawn.Board;
-			var file = pawn.File;
-			var rank = pawn.Rank;
+			var piece = fromItem.Piece;
+			var player = piece.Player;
+			var board = fromItem.Board;
+			var startFile = fromItem.File;
+			var startRank = fromItem.Rank;
 
 			//Следующий горизонталь по направлению игры
-			var nextRank = player == EPlayer.White ? rank + 1 : rank - 1;
+			var nextRank = player == EPlayer.White ? startRank + 1 : startRank - 1;
 
 			//Начальное положение пешки
 			var smallIndex = player == EPlayer.White ? 1 : 6;
@@ -311,78 +437,170 @@ namespace ChessApp
 			var penultimateIndex = player == EPlayer.White ? 6 : 1;
 
 
-			if (board[file, nextRank] == null)
+			if (board[startFile, nextRank] == null)
 			{
-				if (rank == penultimateIndex)
+				var remove = new[] { fromItem };
+
+				if (startRank == penultimateIndex)
 				{
 					//Ход без взятия с превращением
-					result.Add(new CMoveSimplePromotion(pawn, new CPieceQueen(pawn.Player)));
-					result.Add(new CMoveSimplePromotion(pawn, new CPieceRook(pawn.Player)));
-					result.Add(new CMoveSimplePromotion(pawn, new CPieceBishop(pawn.Player)));
-					result.Add(new CMoveSimplePromotion(pawn, new CPieceKnight(pawn.Player)));
+					//result.Add(new CMoveSimplePromotion(piece, new CPieceQueen(piece.Player)));
+					//result.Add(new CMoveSimplePromotion(piece, new CPieceRook(piece.Player)));
+					//result.Add(new CMoveSimplePromotion(piece, new CPieceBishop(piece.Player)));
+					//result.Add(new CMoveSimplePromotion(piece, new CPieceKnight(piece.Player)));
+					
+					result.Add(new CMove(remove, new[] { new CMoveItem(board, new CPieceQueen(piece.Player), startFile, nextRank) }));
+					result.Add(new CMove(remove, new[] { new CMoveItem(board, new CPieceRook(piece.Player), startFile, nextRank) }));
+					result.Add(new CMove(remove, new[] { new CMoveItem(board, new CPieceBishop(piece.Player), startFile, nextRank) }));
+					result.Add(new CMove(remove, new[] { new CMoveItem(board, new CPieceKnight(piece.Player), startFile, nextRank) }));
 				}
 				else
 				{
 					//Ход без взятия без превращения
-					result.Add(new CMoveSimple(pawn, file, nextRank));
+					//result.Add(new CMoveSimple(piece, file, nextRank));
+					result.Add(new CMove(remove, new[] { new CMoveItem(board, piece, startFile, nextRank) }));
+
 				}
 
-				if (rank == smallIndex && board[file, largeIndex] == null)
+				if (startRank == smallIndex && board[startFile, largeIndex] == null)
 				{
 					//Двойной ход пешки
-					result.Add(new CMoveSimple(pawn, file, largeIndex));
+					//result.Add(new CMoveSimple(piece, file, largeIndex));
+					result.Add(new CMove(remove, new[] { new CMoveItem(board, piece, startFile, largeIndex) }));
 				}
 			}
 
-			if (file < 7)
+			if (startFile < 7)
 			{
-				var partner = board[file + 1, nextRank];
+				var file = startFile + 1;
+				var rank = nextRank;
+				var partner = board[file, rank];
 				if (partner != null && partner.Player != player)
 				{
-					if (rank == penultimateIndex)
+					if (partner.Type == EPieceType.King)
+					{
+						return false;
+					}
+					
+					var remove = new[] { fromItem, new CMoveItem(board, partner, file, rank) };
+
+					if (startRank == penultimateIndex)
 					{
 						//Ход со взятием с превращением
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceQueen(pawn.Player), partner));
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceRook(pawn.Player), partner));
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceBishop(pawn.Player), partner));
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceKnight(pawn.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceQueen(piece.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceRook(piece.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceBishop(piece.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceKnight(piece.Player), partner));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceQueen(piece.Player), file, rank) }));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceRook(piece.Player), file, rank) }));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceBishop(piece.Player), file, rank) }));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceKnight(piece.Player), file, rank) }));
 					}
 					else
 					{
 						//Ход со взятием без превращения
-						result.Add(new CMoveCapture(pawn, partner));
+						//result.Add(new CMoveCapture(piece, partner));
+
+						result.Add(new CMove(remove, new[] { new CMoveItem(board, piece, file, rank) }));
 					}
 				}
 			}
 
-			if (file > 0)
+			if (startFile > 0)
 			{
-				var partner = board[file - 1, nextRank];
+				var file = startFile - 1;
+				var rank = nextRank;
+				var partner = board[file, rank];
 				if (partner != null && partner.Player != player)
 				{
-					if (rank == penultimateIndex)
+					if (partner.Type == EPieceType.King)
+					{
+						return false;
+					}
+
+					var remove = new[] { fromItem, new CMoveItem(board, partner, file, rank) };
+
+					if (startRank == penultimateIndex)
 					{
 						//Ход со взятием с превращением
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceQueen(pawn.Player), partner));
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceRook(pawn.Player), partner));
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceBishop(pawn.Player), partner));
-						result.Add(new CMoveCapturePromotion(pawn, new CPieceKnight(pawn.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceQueen(piece.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceRook(piece.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceBishop(piece.Player), partner));
+						//result.Add(new CMoveCapturePromotion(piece, new CPieceKnight(piece.Player), partner));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceQueen(piece.Player), file, rank) }));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceRook(piece.Player), file, rank) }));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceBishop(piece.Player), file, rank) }));
+
+						result.Add(new CMove(remove,
+							new[] { new CMoveItem(board, new CPieceKnight(piece.Player), file, rank) }));
 					}
 					else
 					{
 						//Ход со взятием без превращения
-						result.Add(new CMoveCapture(pawn, partner));
+						//result.Add(new CMoveCapture(piece, partner));
+
+						result.Add(new CMove(remove, new[] { new CMoveItem(board, piece, file, rank) }));
 					}
 				}
 			}
 
-			return result;
+			return true;
 		}
-		
-		public List<CMove> GetAllMoves(EPlayer player)
+
+		//private class CMoveEnumerator : IEnumerator<CMove>
+		//{
+		//	public void Dispose()
+		//	{
+		//	}
+
+		//	public bool MoveNext()
+		//	{
+		//		throw new System.NotImplementedException();
+		//	}
+
+		//	public void Reset()
+		//	{
+		//	}
+
+		//	public CMove Current { get; }
+
+		//	object IEnumerator.Current => Current;
+		//}
+
+
+		//private class CMoveEnumerable : IEnumerable<CMove>
+		//{
+		//	public IEnumerator<CMove> GetEnumerator()
+		//	{
+		//		throw new System.NotImplementedException();
+		//	}
+
+		//	IEnumerator IEnumerable.GetEnumerator()
+		//	{
+		//		return GetEnumerator();
+		//	}
+		//}
+
+		public IEnumerable<CMove> GetAllMoves(EPlayer player)
 		{
 			var result = new List<CMove>();
 
+
+			var kingResult = true;
 			for (var file = 0; file < 8; file++)
 			{
 				for (var rank = 0; rank < 8; rank++)
@@ -394,69 +612,100 @@ namespace ChessApp
 						continue;
 					}
 
-					if (piece is CPiecePawn)
+					var fromItem = new CMoveItem(Board, piece, file, rank);
+
+					switch (piece.Type)
 					{
-						result.AddRange(GetAllPawnMoves(piece as CPiecePawn));
+						case EPieceType.Pawn:
+							kingResult = AddPawnMoves(result, fromItem);
+							break;
+						case EPieceType.King:
+							kingResult = AddKingMoves(result, fromItem);
+							break;
+						case EPieceType.Queen:
+							kingResult = AddQueenMoves(result, fromItem);
+							break;
+						case EPieceType.Rook:
+							kingResult = AddRookMoves(result, fromItem);
+							break;
+						case EPieceType.Bishop:
+							kingResult = AddBishopMoves(result, fromItem);
+							break;
+						case EPieceType.Knight:
+							kingResult = AddKnightMoves(result, fromItem);
+							break;
 					}
 
-					if (piece is CPieceKing)
+					if (!kingResult)
 					{
-						result.AddRange(GetAllKingMoves(piece));
-					}
-
-					if (piece is CPieceQueen)
-					{
-						result.AddRange(GetAllQueenMoves(piece));
-					}
-
-					if (piece is CPieceRook)
-					{
-						result.AddRange(GetAllRookMoves(piece));
-					}
-
-					if (piece is CPieceBishop)
-					{
-						result.AddRange(GetAllBishopMoves(piece));
-					}
-
-					if (piece is CPieceKnight)
-					{
-						result.AddRange(GetAllKnightMoves(piece));
+						return null;
 					}
 				}
 			}
+
 
 			return result;
 		}
 
-		public int Analyze(EPlayer player = EPlayer.White, int depth = 3)
+
+		public enum EAnalizeResult
 		{
+			Normal,
+
+			/// <summary>
+			/// Невозможная комбинация.
+			/// </summary>
+			Impossible,
+
+			/// <summary>
+			/// Мат или пат.
+			/// </summary>
+			Mate
+		}
+
+		public EAnalizeResult Analyze(EPlayer player, int depth, out int counter)
+		{
+			counter = 0;
+
 			if (depth == 0)
 			{
-				return 0;
+				return EAnalizeResult.Normal;
 			}
 
-			var result = 0;
 
 			var moves = GetAllMoves(player);
-			result += moves.Count;
+
+			if (moves == null)
+			{
+				return EAnalizeResult.Impossible;
+			}
 
 			foreach (var move in moves)
 			{
 				move.Do();
-				var counterMoves = GetAllMoves(1 - player);
-				result += counterMoves.Count;
+				counter++;
 
-				foreach (var counterMove in counterMoves)
+				var counterMoves = GetAllMoves(1 - player);
+
+				if (counterMoves != null)
 				{
-					counterMove.Do();
-					result += Analyze(player, depth - 1);
-					counterMove.Undo();
+					foreach (var counterMove in counterMoves)
+					{
+						counterMove.Do();
+						counter++;
+
+						int count;
+						Analyze(player, depth - 1, out count);
+						counter += count;
+
+						counterMove.Undo();
+					}
 				}
+
 				move.Undo();
 			}
-
-			return result;
+			
+			return EAnalizeResult.Normal;
 		}
 	}
 }

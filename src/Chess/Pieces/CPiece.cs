@@ -2,48 +2,82 @@ using Chess.Enums;
 
 namespace Chess.Pieces
 {
+	public enum EPieceType
+	{
+		None,
+		King,
+		Queen,
+		Rook,
+		Bishop,
+		Knight,
+		Pawn
+	}
+
 	public abstract class CPiece
 	{
 		public EPlayer Player { get; }
 
-		public CBoard Board { get; private set; }
+		public EPieceType Type { get; }
 
-		public int File { get; private set; }
+		//public CBoard Board { get; internal set; }
 
-		public int Rank { get; private set; }
+		//public int File { get; internal set; }
 
-		protected CPiece(EPlayer player)
+		//public int Rank { get; internal set; }
+
+		protected CPiece(EPlayer player, EPieceType type)
 		{
 			Player = player;
+			Type = type;
 		}
 
-		public void MoveTo(string coordinate)
-		{
-			MoveTo(CSquare.Parse(coordinate));
-		}
+		//public void MoveTo(string coordinate)
+		//{
+		//	MoveTo(CSquare.Parse(coordinate));
+		//}
 
-		public void MoveTo(CSquare square)
-		{
-			MoveTo(Board, square.File, square.Rank);
-		}
+		//public void MoveTo(CSquare square)
+		//{
+		//	MoveTo(Board, square.File, square.Rank);
+		//}
 
-		public void MoveTo(int file, int rank)
-		{
-			MoveTo(Board, file, rank);
-		}
+		//public void MoveTo(int file, int rank)
+		//{
+		//	MoveTo(Board, file, rank);
+		//}
 
-		internal void MoveTo(CBoard board, int file, int rank)
-		{
-			if (Board != board || File != file || Rank != rank)
-			{
-				Board?.SetPiece(null, File, Rank);
-				board?.SetPiece(this, file, rank);
+		//internal void MoveTo(CBoard board, int file, int rank)
+		//{
+		//	if (Board != board || File != file || Rank != rank)
+		//	{
+		//		if (Board != null)
+		//		{
+		//			Board[File, Rank] = null;
+		//		}
 
-				Board = board;
-				File = file;
-				Rank = rank;
-			}
-		}
+		//		if (board != null)
+		//		{
+		//			board[file, rank] = this;
+		//		}
+
+		//		Board = board;
+		//		File = file;
+		//		Rank = rank;
+		//	}
+		//}
+
+		//internal void MoveTo(CBoard board, int file, int rank)
+		//{
+		//	if (Board != board || File != file || Rank != rank)
+		//	{
+		//		Board?.SetPiece(null, File, Rank);
+		//		board?.SetPiece(this, file, rank);
+
+		//		Board = board;
+		//		File = file;
+		//		Rank = rank;
+		//	}
+		//}
 
 	}
 }

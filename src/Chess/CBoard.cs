@@ -1,66 +1,75 @@
-﻿using Chess.Enums;
+﻿using System.Collections.Generic;
+using Chess.Enums;
 using Chess.Pieces;
 
 namespace Chess
 {
 	public class CBoard
 	{
-		private readonly CPiece[,] _pieces = new CPiece[8,8];
+		private readonly CPiece[,] _pieces = new CPiece[8, 8];
+		//public readonly Dictionary<CPiece, CPiece> _hash = new Dictionary<CPiece, CPiece>();
+
 
 		public CPiece this[string coordinate]
 		{
-			get
-			{
-				return this[CSquare.Parse(coordinate)];
-			}
-			set
-			{
-				this[CSquare.Parse(coordinate)] = value;
-			}
+			get { return this[CSquare.Parse(coordinate)]; }
+			set { this[CSquare.Parse(coordinate)] = value; }
 		}
 
 		public CPiece this[CSquare square]
 		{
-			get
-			{
-				return this[square.File, square.Rank];
-			}
-			set
-			{
-				this[square.File, square.Rank] = value;
-			}
+			get { return this[square.File, square.Rank]; }
+			set { this[square.File, square.Rank] = value; }
 		}
-
-		//public CPiece this[int file, int rank]
-		//{
-		//	get { return _pieces[file, rank]; }
-		//	set { _pieces[file, rank] = value; }
-		//}
 
 		public CPiece this[int file, int rank]
 		{
 			get { return _pieces[file, rank]; }
 			set
 			{
-				var oldValue = _pieces[file, rank];
+				//var oldValue = _pieces[file, rank];
+				//if (oldValue != null)
+				//{
+				//	_hash.Remove(oldValue);
+				//}
 
-				if (oldValue != value)
-				{
-					oldValue?.MoveTo(null, oldValue.File, oldValue.Rank);
-					value?.MoveTo(this, file, rank);
-				}
+				_pieces[file, rank] = value;
+
+				//if (value != null)
+				//{
+				//	value.Board = this;
+				//	value.File = file;
+				//	value.Rank = rank;
+
+				//	//_hash[value] = value;
+				//}
 			}
 		}
 
-		internal void SetPiece(CPiece piece, int file, int rank)
-		{
-			if (piece != null)
-			{
-				_pieces[file, rank]?.MoveTo(null, file, rank);
-			}
+		//public CPiece this[int file, int rank]
+		//{
+		//	get { return _pieces[file, rank]; }
+		//	set
+		//	{
+		//		var oldValue = _pieces[file, rank];
 
-			_pieces[file, rank] = piece;
-		}
+		//		if (oldValue != value)
+		//		{
+		//			oldValue?.MoveTo(null, oldValue.File, oldValue.Rank);
+		//			value?.MoveTo(this, file, rank);
+		//		}
+		//	}
+		//}
+
+		//internal void SetPiece(CPiece piece, int file, int rank)
+		//{
+		//	if (piece != null)
+		//	{
+		//		_pieces[file, rank]?.MoveTo(null, file, rank);
+		//	}
+
+		//	_pieces[file, rank] = piece;
+		//}
 
 		public static CBoard GetDefaultBoard()
 		{

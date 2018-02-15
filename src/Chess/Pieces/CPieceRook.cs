@@ -4,7 +4,7 @@ namespace Chess.Pieces
 {
 	public class CPieceRook : CPiece
 	{
-		public CPieceRook(EPlayer player) : base(player)
+		public CPieceRook(EPlayer player) : base(player, EPieceType.Rook)
 		{
 		}
 
