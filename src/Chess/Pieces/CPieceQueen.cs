@@ -4,7 +4,7 @@ namespace Chess.Pieces
 {
 	public class CPieceQueen : CPiece
 	{
-		public CPieceQueen(EPlayer player) : base(player, EPieceType.Queen)
+		public CPieceQueen(EPlayer player) : base(player, EPieceType.Queen, player == EPlayer.White ? 900 : -900)
 		{
 		}
 

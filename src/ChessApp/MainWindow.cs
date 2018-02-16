@@ -104,20 +104,29 @@ namespace ChessApp
 		private void DoButton_Click(object sender, RoutedEventArgs e)
 		{
 			//Выбираем все допустимые ходы
-			var moves = _game.GetAllMoves(_player).Where(x =>
-			{
-				x.Do();
-				var result = _game.GetAllMoves(1 - _player) != null;
-				x.Undo();
-				return result;
-			}).ToList();
-			
-			if (moves.Count == 0)
+			//var moves = _game.GetMoves(_player).Where(x =>
+			//{
+			//	x.Do();
+			//	var result = _game.GetMoves(1 - _player) != null;
+			//	x.Undo();
+			//	return result;
+			//}).ToList();
+
+			var depth = 3;
+			double tick = DateTime.Now.Ticks;
+			var analyze = _game.Analyze(_player, depth);
+			tick = (DateTime.Now.Ticks - tick) / 10000D;
+			Title = $"Глубина: {depth}.\r\nПроанализировано: {analyze.Iterations}.\r\nВремя: {tick} мс.";
+
+			var move = analyze.BestMove;
+
+			if (move == null)
 			{
 				MessageBox.Show("Некуда ходить!");
 			}
 			else
 			{
+				var moves = new List<CMove> { move };
 				var index = _random.Next(0, moves.Count);
 				Do(moves[index]);
 			}
@@ -164,12 +173,11 @@ namespace ChessApp
 		
 		private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
 		{
-			var depth = 2;
+			var depth = 1;
 			double tick = DateTime.Now.Ticks;
-			int result;
-			_game.Analyze(EPlayer.White, depth, out result);
+			var analyze = _game.Analyze(EPlayer.White, depth);
 			tick = (DateTime.Now.Ticks - tick)/10000D;
-			MessageBox.Show($"Глубина анализа ходов: {depth}.\r\nПроанализировано варинантов: {result}.\r\nВремя выполнения: {tick} мс.");
+			MessageBox.Show($"Глубина анализа ходов: {depth}.\r\nПроанализировано варинантов: {analyze.Iterations}.\r\nВремя выполнения: {tick} мс.");
 		}
 		
 		private void ResetButton_Click(object sender, RoutedEventArgs e)

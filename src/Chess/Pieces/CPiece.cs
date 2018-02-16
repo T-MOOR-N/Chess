@@ -19,16 +19,19 @@ namespace Chess.Pieces
 
 		public EPieceType Type { get; }
 
+		public double Mark { get; }
+
 		//public CBoard Board { get; internal set; }
 
 		//public int File { get; internal set; }
 
 		//public int Rank { get; internal set; }
 
-		protected CPiece(EPlayer player, EPieceType type)
+		protected CPiece(EPlayer player, EPieceType type, double mark)
 		{
 			Player = player;
 			Type = type;
+			Mark = mark;
 		}
 
 		//public void MoveTo(string coordinate)
