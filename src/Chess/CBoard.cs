@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
-using Chess.Enums;
+﻿using Chess.Enums;
 using Chess.Pieces;
 
 namespace Chess
 {
 	public class CBoard
 	{
-		private readonly CPiece[,] _pieces = new CPiece[8, 8];
-		//public readonly Dictionary<CPiece, CPiece> _hash = new Dictionary<CPiece, CPiece>();
-
-
+		private readonly CPiece[] _pieces = new CPiece[64];
+		
 		public CPiece this[string coordinate]
 		{
 			get { return this[CSquare.Parse(coordinate)]; }
@@ -24,25 +21,10 @@ namespace Chess
 
 		public CPiece this[int file, int rank]
 		{
-			get { return _pieces[file, rank]; }
+			get { return _pieces[file + 8 * rank]; }
 			set
 			{
-				//var oldValue = _pieces[file, rank];
-				//if (oldValue != null)
-				//{
-				//	_hash.Remove(oldValue);
-				//}
-
-				_pieces[file, rank] = value;
-
-				//if (value != null)
-				//{
-				//	value.Board = this;
-				//	value.File = file;
-				//	value.Rank = rank;
-
-				//	//_hash[value] = value;
-				//}
+				_pieces[file + 8 * rank] = value;
 			}
 		}
 

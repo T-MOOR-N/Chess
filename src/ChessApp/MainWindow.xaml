@@ -5,6 +5,7 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:local="clr-namespace:ChessApp"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	xmlns:system="clr-namespace:System;assembly=mscorlib"
 	Title="Chess"
 	Width="750"
 	Height="400"
@@ -49,13 +50,25 @@
 			<Button
 				x:Name="ResetButton"
 				Margin="0,4"
-				Content="Reset" Click="ResetButton_Click" />
+				Click="ResetButton_Click"
+				Content="Reset" />
 
 			<Button
 				x:Name="AnalyzeButton"
 				Margin="0,4"
 				Click="AnalyzeButton_Click"
 				Content="Analyze" />
+
+			<ComboBox
+				x:Name="ComboBox"
+				Margin="0,4"
+				VerticalContentAlignment="Center"
+				SelectedIndex="1">
+				<system:Int32>1</system:Int32>
+				<system:Int32>2</system:Int32>
+				<system:Int32>3</system:Int32>
+				<system:Int32>4</system:Int32>
+			</ComboBox>
 		</UniformGrid>
 		<ListBox
 			x:Name="ListBox"

@@ -40,6 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IntBoard.cs" />
     <Compile Include="Moves\CMove.cs" />
     <Compile Include="CSquare.cs" />
     <Compile Include="Moves\CMoveItem.cs" />

@@ -5,7 +5,6 @@ using System.Windows.Media;
 using Chess;
 using System.Windows;
 using Chess.Enums;
-using Chess.Pieces;
 
 namespace ChessApp
 {
@@ -36,6 +35,8 @@ namespace ChessApp
 				var size = Math.Min(ActualWidth, ActualHeight);
 				SetValue(SquareSizeProperty, size/8D);
 			}
+
+			InvalidateVisual();
 		}
 
 		private static readonly Color BlackColor = Color.FromRgb(110, 110, 110);

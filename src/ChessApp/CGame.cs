@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Chess;
@@ -11,6 +10,22 @@ namespace ChessApp
 {
 	public class CGame
 	{
+		public struct CAnalyzeResult
+		{
+			public CMove BestMove { get; }
+			public double BestMark { get; }
+			public int Iterations { get; }
+
+			public CAnalyzeResult(CMove bestMove, double bestMark, int iterations)
+			{
+				BestMove = bestMove;
+				BestMark = bestMark;
+				Iterations = iterations;
+			}
+		}
+		
+		private Random _random = new Random();
+
 		private readonly List<CMove> _history = new List<CMove>();
 
 		private int _historyIndex = -1;
@@ -646,22 +661,7 @@ namespace ChessApp
 
 			return result;
 		}
-
-		public enum EAnalizeResult
-		{
-			Normal,
-
-			/// <summary>
-			/// Невозможная комбинация.
-			/// </summary>
-			Impossible,
-
-			/// <summary>
-			/// Мат или пат.
-			/// </summary>
-			Mate
-		}
-
+		
 		private double GetMark(EPlayer player)
 		{
 			double result = 0;
@@ -701,8 +701,6 @@ namespace ChessApp
 						}
 					}
 
-
-
 					result += piece.Mark;
 				}
 			}
@@ -712,23 +710,7 @@ namespace ChessApp
 
 			return kingNotFound ? double.NegativeInfinity : (player == EPlayer.White ? result : -result);
 		}
-
-		private Random _random = new Random();
-
-		public struct CAnalyzeResult
-		{
-			public CMove BestMove { get; }
-			public double BestMark { get; }
-			public int Iterations { get; }
-
-			public CAnalyzeResult(CMove bestMove, double bestMark, int iterations)
-			{
-				BestMove = bestMove;
-				BestMark = bestMark;
-				Iterations = iterations;
-			}
-		}
-
+		
 		private double GetMark(EPlayer player, int depth, ref int iterations)
 		{
 			if (depth == 1)

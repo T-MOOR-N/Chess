@@ -6,7 +6,6 @@ using System.Windows.Input;
 using Chess;
 using Chess.Enums;
 using Chess.Moves;
-using Chess.Pieces;
 
 namespace ChessApp
 {
@@ -28,9 +27,10 @@ namespace ChessApp
 
 		private void Reset()
 		{
-			ChessBoard.Board =   CBoard.GetDefaultBoard();
+			ChessBoard.Board = CBoard.GetDefaultBoard();
+			_player = EPlayer.White;
 
-			//_board = new CBoard
+			//ChessBoard.Board = new CBoard
 			//{
 			//	["B7"] = new CPieceKing(EPlayer.White),
 			//	["D7"] = new CPieceKing(EPlayer.Black),
@@ -38,16 +38,27 @@ namespace ChessApp
 			//	["E6"] = new CPieceKnight(EPlayer.White),
 			//	["E7"] = new CPieceBishop(EPlayer.Black),
 			//};
+			//_player = EPlayer.White;
 
-			//_board = new CBoard
+			//ChessBoard.Board = new CBoard
 			//{
 			//	["H6"] = new CPieceKing(EPlayer.Black),
 			//	["H8"] = new CPieceKing(EPlayer.White),
 			//	["G1"] = new CPieceQueen(EPlayer.Black)
 			//};
+			//_player = EPlayer.White;
+
+			//ChessBoard.Board = new CBoard
+			//{
+			//	["B6"] = new CPieceKnight(EPlayer.White),
+			//	["B5"] = new CPieceKing(EPlayer.White),
+			//	["C7"] = new CPieceKing(EPlayer.Black),
+			//	["F7"] = new CPieceKnight(EPlayer.White),
+			//	["H7"] = new CPieceQueen(EPlayer.White),
+			//};
+			//_player = EPlayer.White;
 
 			_game = new CGame(ChessBoard.Board);
-			_player = EPlayer.White;
 			ChessBoard.InvalidateVisual();
 			ListBox.ItemsSource = null;
 		}
@@ -112,7 +123,7 @@ namespace ChessApp
 			//	return result;
 			//}).ToList();
 
-			var depth = 3;
+			var depth = (int) ComboBox.SelectedItem;
 			double tick = DateTime.Now.Ticks;
 			var analyze = _game.Analyze(_player, depth);
 			tick = (DateTime.Now.Ticks - tick) / 10000D;
@@ -173,11 +184,22 @@ namespace ChessApp
 		
 		private void AnalyzeButton_Click(object sender, RoutedEventArgs e)
 		{
-			var depth = 1;
+			var depth = (int)ComboBox.SelectedItem;
 			double tick = DateTime.Now.Ticks;
 			var analyze = _game.Analyze(EPlayer.White, depth);
-			tick = (DateTime.Now.Ticks - tick)/10000D;
+			tick = (DateTime.Now.Ticks - tick) / 10000D;
 			MessageBox.Show($"Глубина анализа ходов: {depth}.\r\nПроанализировано варинантов: {analyze.Iterations}.\r\nВремя выполнения: {tick} мс.");
+
+			//var board = new CBoard();
+			//var board = new IntBoard();
+
+			//double tick = DateTime.Now.Ticks;
+			//for (var i = 0; i < 10000000; i++)
+			//{
+			//	board.Test();
+			//}
+			//tick = (DateTime.Now.Ticks - tick) / 10000D;
+			//MessageBox.Show(tick.ToString());
 		}
 		
 		private void ResetButton_Click(object sender, RoutedEventArgs e)
